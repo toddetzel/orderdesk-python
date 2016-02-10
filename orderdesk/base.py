@@ -4,13 +4,6 @@ import os
 import requests
 
 
-class OrderDeskException(Exception):
-    def __init__(self, status_code=None, reason=None):
-        message = 'HTTP %s from OrderDesk: %s' % (
-            status_code, reason)
-        Exception.__init__(self, message)
-
-
 class OrderDeskBaseClient(object):
     def __init__(self, store_id=None, apikey=None):
         self.endpoint = 'https://app.orderdesk.me/api/v2/'
@@ -33,25 +26,38 @@ class OrderDeskBaseClient(object):
             'Content-Type': 'application/json',
         }
 
+    def send_response(self, response):
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return {
+                'status': 'error',
+                'message': 'HTTP %s' % response.status_code,
+            }
+
     def get(self, method, data={}):
-        return requests.get(
-            urljoin(self.endpoint, method),
-            params=dict(data),
-            headers=self.headers)
+        return self.send_response(
+            requests.get(
+                urljoin(self.endpoint, method),
+                params=dict(data),
+                headers=self.headers))
 
     def post(self, method, data={}):
-        return requests.post(
-            urljoin(self.endpoint, method),
-            data=dict(data),
-            headers=self.headers)
+        return self.send_response(
+            requests.post(
+                urljoin(self.endpoint, method),
+                data=dict(data),
+                headers=self.headers))
 
     def put(self, method, data={}):
-        return requests.put(
-            urljoin(self.endpoint, method),
-            data=dict(data),
-            headers=self.headers)
+        return self.send_response(
+            requests.put(
+                urljoin(self.endpoint, method),
+                data=dict(data),
+                headers=self.headers))
 
     def delete(self, method={}):
-        return requests.delete(
-            urljoin(self.endpoint, method),
-            headers=self.headers)
+        return self.send_response(
+            requests.delete(
+                urljoin(self.endpoint, method),
+                headers=self.headers))
