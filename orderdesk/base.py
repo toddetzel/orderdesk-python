@@ -1,5 +1,6 @@
 from urlparse import urljoin
 
+import json
 import os
 import requests
 
@@ -27,7 +28,7 @@ class OrderDeskBaseClient(object):
         }
 
     def send_response(self, response):
-        if response.status_code == 200:
+        if response.status_code in [200, 201]:
             return response.json()
         else:
             return {
@@ -39,21 +40,21 @@ class OrderDeskBaseClient(object):
         return self.send_response(
             requests.get(
                 urljoin(self.endpoint, method),
-                params=dict(data),
+                params=data,
                 headers=self.headers))
 
     def post(self, method, data={}):
         return self.send_response(
             requests.post(
                 urljoin(self.endpoint, method),
-                data=dict(data),
+                data=json.dumps(data),
                 headers=self.headers))
 
     def put(self, method, data={}):
         return self.send_response(
             requests.put(
                 urljoin(self.endpoint, method),
-                data=dict(data),
+                data=json.dumps(data),
                 headers=self.headers))
 
     def delete(self, method={}):

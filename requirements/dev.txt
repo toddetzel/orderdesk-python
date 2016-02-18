@@ -1,2 +1,3 @@
 -r prod.txt
 pytest==2.8.7
+vcrpy==1.7.4
