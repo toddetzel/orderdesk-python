@@ -85,12 +85,12 @@ class ShipmentClient(OrderDeskBaseClient):
 
     def create_shipment(self, order_id, data):
         return self.post(
-            'orders/%s' % order_id,
+            'orders/%s/shipments' % order_id,
             data=data)
 
     def delete_shipment(self, order_id, shipment_id):
         return self.delete(
-            'orders/%s' % order_id)
+            'orders/%s/shipments/%s' % (order_id, shipment_id))
 
 
 class InventoryClient(OrderDeskBaseClient):
